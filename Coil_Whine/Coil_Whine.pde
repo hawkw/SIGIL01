@@ -35,7 +35,7 @@ void setup() {
   helvetica35 = loadFont("HelveticaNeue-Bold-35.vlw");
   jewelry_box = loadImage("jewelry_box.png");
   background(bg_color);
-  size(1000,800);
+  size(1000, 800);
   mode = Mode.NONE;
   visible_symbols = 1;
   tri_rot = 0;
@@ -106,6 +106,7 @@ void great_seal(int saturation) {
 }
 
 void title() {
+  textAlign(LEFT);
   textFont(helvetica35, 35);
   colorMode(RGB);
   fill(255 - title_fade);
@@ -131,10 +132,17 @@ void title() {
     title_fade--;
 }
 
-void make_me_lonely() { mode       = Mode.NONE;
-                        title_fade = 255;
-                        bg_color   = 255;
-                        rune_color = 0;
+void make_me_lonely() { mode            = Mode.NONE;
+                        title_fade      = 255;
+                        bg_color        = 255;
+                        rune_color      = 0;
+                        visible_symbols = 1;
+                        gainGlide.setValue(0.1);
+                        
+                        for (Symbol symbol: symbols)
+                          symbol.sineFrequency
+                                .setValue(symbol.metal
+                                                .atomic_weight);
                       }
 
 void draw() { //<>// //<>//
@@ -157,10 +165,23 @@ void draw() { //<>// //<>//
   // figure out how big the coil is
   int coil = (width - mouseX) / (width / 360);
   // draw each planetary symbol
-  for (int i = 1; i <= visible_symbols; i++)
-    symbols[i - 1].draw( coil
-                , i * (width / (visible_symbols + 1))
-                , height / 2 );
+  for (int i = 1; i <= visible_symbols; i++) {
+    int x = i * (width / (visible_symbols + 1));
+    int y = height / 2;
+    if (mode == Mode.JEWELRY_BOX && abs(x - mouseX) < 55
+                                 && abs(y - mouseY) < 55) 
+    { fill(rune_color);
+      textFont(pragmata150, 90);
+      textAlign(CENTER, CENTER);
+      text( (int)symbols[i - 1].metal
+                               .atomic_number
+          , x 
+          , y );
+      
+    } else {
+      symbols[i - 1].draw( coil, x, y);
+    }
+  }
 
   symbols[visible_symbols - 1]
         .sineFrequency
